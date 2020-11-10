@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using EmployeeSample.Models;
 using EmployeeSample.ViewModels;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeSample.Controllers
@@ -11,11 +13,16 @@ namespace EmployeeSample.Controllers
     public class HomeController : Controller
     {
         private readonly IEmployeeRepository employeeRepo;
-        public HomeController(IEmployeeRepository _employee)
+        private readonly IHostingEnvironment hostingEnvironment;
+
+        public HomeController(IEmployeeRepository _employee, IHostingEnvironment _hostingEnvironment)
         {
             employeeRepo = _employee;
+            hostingEnvironment = _hostingEnvironment;
+
+
         }
-       
+
         public IActionResult Index()
         {
             var model = employeeRepo.GetAllEmployees();
@@ -38,11 +45,27 @@ namespace EmployeeSample.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(Employee employee)
+        public IActionResult Create(EmployeeCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
-                Employee newEmployee = employeeRepo.AddEmployee(employee);
+                string uniqueFileName = null;
+                if(model.Photo != null)
+                {
+                   string uploadsFolder =  Path.Combine(hostingEnvironment.WebRootPath,"images");
+                   uniqueFileName=Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
+                   string filepath =Path.Combine(uploadsFolder, uniqueFileName);
+                    model.Photo.CopyTo(new FileStream(filepath, FileMode.Create));
+                }
+
+                Employee newEmployee = new Employee
+                {
+                    Name = model.Name,
+                    Department = model.Department,
+                    Email = model.Email,
+                    Photopath = uniqueFileName
+                };
+                employeeRepo.AddEmployee(newEmployee);
                 return RedirectToAction("details", new { id = newEmployee.Id });
             }
             else
