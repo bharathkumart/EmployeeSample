@@ -12,6 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace EmployeeSample
 {
@@ -29,10 +32,20 @@ namespace EmployeeSample
         {
             services.AddDbContextPool<AppDbContext>(
             options => options.UseSqlServer(_config.GetConnectionString("EmployeeDBConnection")));
-
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.Password.RequiredLength = 5;
+            })
+                .AddEntityFrameworkStores<AppDbContext>();
             services.ConfigureDependencyInjection(_config);
-            services.AddMvc(options => options.EnableEndpointRouting = false);
-
+           // services.AddMvc(options => options.EnableEndpointRouting = false);
+            services.AddMvc(options => {
+                var policy = new AuthorizationPolicyBuilder()
+                                .RequireAuthenticatedUser()
+                                .Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
+                options.EnableEndpointRouting = false;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,8 +55,14 @@ namespace EmployeeSample
             {
                 app.UseDeveloperExceptionPage();
             }
-           
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                app.UseStatusCodePagesWithReExecute("/Error/{0}");
+            }
+
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseMvcWithDefaultRoute();
             app.UseRouting();
 
