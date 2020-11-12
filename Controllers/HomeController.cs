@@ -110,6 +110,11 @@ namespace EmployeeSample.Controllers
 
             return uniqueFileName;
         }
+        public IActionResult Delete(int id)
+        {
+            Employee employee = employeeRepo.Delete(id);
+            return RedirectToAction("index");
+        }
 
         [HttpPost]
         public IActionResult Create(EmployeeCreateViewModel model)
