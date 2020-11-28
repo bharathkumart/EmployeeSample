@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EmployeeSample.ViewModels
 {
-    public class EmployeeCreateViewModel
+    public class EmployeeCreateViewModel 
     {
        
         [Required, MaxLength(50, ErrorMessage = "Name cannot exceed 50 characters")]
@@ -21,5 +21,12 @@ namespace EmployeeSample.ViewModels
         public Dept? Department { get; set; }
 
         public IFormFile Photo { get; set; }
+        public bool IsManager { get; set; } = false;
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        public string City { get; set; }
+        public Guid ParentId { get; set; } = new Guid();
     }
 }

@@ -19,7 +19,7 @@ namespace EmployeeSample.Models
             return employee;
         }
 
-        public Employee Delete(int id)
+        public Employee Delete(Guid id)
         {
             Employee employee = _context.Employees.Find(id);
             if(employee != null)
@@ -34,8 +34,12 @@ namespace EmployeeSample.Models
         {
             return _context.Employees;
         }
+        public IEnumerable<Employee> GetAllManagers()
+        {
+            return _context.Employees.Where(E => E.IsManager == true).ToList();
+        }
 
-        public Employee GetEmployee(int id)
+        public Employee GetEmployee(Guid id)
         {
            return _context.Employees.Find(id);
         }

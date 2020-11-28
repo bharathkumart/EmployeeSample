@@ -13,15 +13,15 @@ namespace EmployeeSample.Models
            modelBuilder.Entity<Employee>().HasData(
            new Employee
            {
-               Id = 1,
-               Name = "Bharath",
+               Id = Guid.NewGuid(),
+               UserName = "Bharath",
                Department = Dept.IT,
                Email = "bharath@gmail.com"
            },
             new Employee
             {
-                Id = 2,
-                Name = "Rajesh",
+                Id = Guid.NewGuid(),
+                UserName = "Rajesh",
                 Department = Dept.HR,
                 Email = "rajesd@gmail.com"
             }

@@ -13,20 +13,20 @@ namespace EmployeeSample.Models
         {
             _employeeList = new List<Employee>()
         {
-            new Employee() { Id = 1, Name = "Mary", Department = Dept.HR, Email = "mary@pragimtech.com" },
-            new Employee() { Id = 2, Name = "John", Department = Dept.IT, Email = "john@pragimtech.com" },
-            new Employee() { Id = 3, Name = "Sam", Department = Dept.Finance, Email = "sam@pragimtech.com" },
+            new Employee() { Id = Guid.NewGuid(), UserName = "Mary", Department = Dept.HR, Email = "mary@pragimtech.com" },
+            new Employee() { Id = Guid.NewGuid(), UserName = "John", Department = Dept.IT, Email = "john@pragimtech.com" },
+            new Employee() { Id = Guid.NewGuid(), UserName = "Sam", Department = Dept.Finance, Email = "sam@pragimtech.com" },
         };
         }
 
         public Employee AddEmployee(Employee employee)
         {
-            employee.Id = _employeeList.Max(e => e.Id) + 1;
+            employee.Id = Guid.NewGuid();
             _employeeList.Add(employee);
             return employee;
         }
 
-        public Employee Delete(int id)
+        public Employee Delete(Guid id)
         {
             Employee employee = _employeeList.FirstOrDefault(e => e.Id == id);
             if (employee != null)
@@ -36,14 +36,29 @@ namespace EmployeeSample.Models
             return employee;
         }
 
+        public Employee Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<Employee> GetAllEmployees()
         {
             return _employeeList;
         }
 
-        public Employee GetEmployee(int Id)
+        public IEnumerable<Employee> GetAllManagers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Employee GetEmployee(Guid Id)
         {
             return this._employeeList.FirstOrDefault(e => e.Id == Id);
+        }
+
+        public Employee GetEmployee(int Id)
+        {
+            throw new NotImplementedException();
         }
 
         public Employee Update(Employee employee)
@@ -51,7 +66,7 @@ namespace EmployeeSample.Models
             Employee emp = _employeeList.FirstOrDefault(e => e.Id == employee.Id);
             if (employee != null)
             {
-                employee.Name = employee.Name;
+                employee.UserName = employee.UserName;
                 employee.Email = employee.Email;
                 employee.Department = employee.Department;
             }

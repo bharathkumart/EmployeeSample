@@ -7,6 +7,7 @@ using EmployeeSample.Models;
 using EmployeeSample.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeSample.Controllers
@@ -16,14 +17,16 @@ namespace EmployeeSample.Controllers
     {
         private readonly IEmployeeRepository employeeRepo;
         private readonly IHostingEnvironment hostingEnvironment;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public HomeController(IEmployeeRepository _employee, IHostingEnvironment _hostingEnvironment)
+        public HomeController(IEmployeeRepository _employee, IHostingEnvironment _hostingEnvironment,
+            UserManager<ApplicationUser> userManager)
         {
             employeeRepo = _employee;
             hostingEnvironment = _hostingEnvironment;
-
-
+            _userManager = userManager;
         }
+
         [AllowAnonymous]
         public IActionResult Index()
         {
@@ -31,8 +34,12 @@ namespace EmployeeSample.Controllers
             // Pass the list of employees to the view
             return View(model);
         }
+        public List<Employee> GetAllManagers()
+        {
+            return employeeRepo.GetAllManagers().ToList();
+        }
         [AllowAnonymous]
-        public ViewResult Details(int id)
+        public ViewResult Details(Guid id)
         {
             Employee employee = employeeRepo.GetEmployee(id);
             if(employee == null)
@@ -48,19 +55,26 @@ namespace EmployeeSample.Controllers
             return View(model );
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public ViewResult Create()
         {
-            return View();
+            EmployeeCreateViewModel model = new EmployeeCreateViewModel();
+            model.IsManager = false;
+            List<Employee> employees = new List<Employee>();
+            employees = GetAllManagers();
+            ViewBag.Managers = employees;
+            return View(model);
         }
 
         [HttpGet]
-        public ViewResult Edit(int id)
+        [Authorize(Roles = "Admin")]
+        public ViewResult Edit(Guid id)
         {
             Employee employee = employeeRepo.GetEmployee(id);
             EmployeeEditViewModel employeeEditViewModel = new EmployeeEditViewModel
             {
                 Id=employee.Id,
-                Name = employee.Name,
+                Name = employee.UserName,
                 Email = employee.Email,
                 Department =employee.Department,
                 ExistingPhotoPath = employee.Photopath
@@ -68,12 +82,13 @@ namespace EmployeeSample.Controllers
             return View(employeeEditViewModel);
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(EmployeeEditViewModel model)
         {
             if (ModelState.IsValid)
             {
                 Employee employee = employeeRepo.GetEmployee(model.Id);
-                employee.Name = model.Name;
+                employee.UserName = model.Name;
                 employee.Email = model.Email;
                 employee.Department = model.Department;
                 if(model.Photo != null)
@@ -110,14 +125,15 @@ namespace EmployeeSample.Controllers
 
             return uniqueFileName;
         }
-        public IActionResult Delete(int id)
+        [Authorize(Roles = "Admin")]
+        public IActionResult Delete(Guid id)
         {
             Employee employee = employeeRepo.Delete(id);
             return RedirectToAction("index");
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public IActionResult Create(EmployeeCreateViewModel model)
+        public async Task<IActionResult> Create(EmployeeCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -125,12 +141,27 @@ namespace EmployeeSample.Controllers
 
                 Employee newEmployee = new Employee
                 {
-                    Name = model.Name,
+                    UserName = model.Name,
                     Department = model.Department,
                     Email = model.Email,
-                    Photopath = uniqueFileName
+                    Photopath = uniqueFileName,
+                    IsManager = model.IsManager,
+                    ParentId = model.ParentId                 
                 };
                 employeeRepo.AddEmployee(newEmployee);
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    Department = model.Department,
+                    Photopath = uniqueFileName,
+                    IsManager = model.IsManager,
+                    ParentId = model.ParentId,
+                    City = model.City
+
+                };
+               
+               var result = await _userManager.CreateAsync(user, model.Password);
                 return RedirectToAction("details", new { id = newEmployee.Id });
             }
             else

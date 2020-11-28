@@ -7,10 +7,11 @@ namespace EmployeeSample.Models
 {
     public interface IEmployeeRepository
     {
-        Employee GetEmployee(int Id);
+        Employee GetEmployee(Guid Id);
         IEnumerable<Employee> GetAllEmployees();
         Employee AddEmployee(Employee employee);
         Employee Update(Employee employee);
-        Employee Delete(int id);
+        Employee Delete(Guid id);
+        IEnumerable<Employee> GetAllManagers();
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EmployeeSample.Migrations
 {
-    public partial class AddingIdentity : Migration
+    public partial class InitialMigraton : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -39,11 +39,33 @@ namespace EmployeeSample.Migrations
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    City = table.Column<string>(nullable: true),
+                    Department = table.Column<int>(nullable: true),
+                    Photopath = table.Column<string>(nullable: true),
+                    IsManager = table.Column<bool>(nullable: false),
+                    ParentId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Employees",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    UserName = table.Column<string>(maxLength: 50, nullable: false),
+                    Email = table.Column<string>(nullable: true),
+                    Department = table.Column<int>(nullable: false),
+                    Photopath = table.Column<string>(nullable: true),
+                    IsManager = table.Column<bool>(nullable: false),
+                    ParentId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employees", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -152,6 +174,16 @@ namespace EmployeeSample.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Employees",
+                columns: new[] { "Id", "Department", "Email", "IsManager", "ParentId", "Photopath", "UserName" },
+                values: new object[] { new Guid("0c23f85c-7ee7-4945-babc-a0edddda7d45"), 2, "bharath@gmail.com", false, new Guid("00000000-0000-0000-0000-000000000000"), null, "Bharath" });
+
+            migrationBuilder.InsertData(
+                table: "Employees",
+                columns: new[] { "Id", "Department", "Email", "IsManager", "ParentId", "Photopath", "UserName" },
+                values: new object[] { new Guid("dafb3870-e846-4424-ae50-1382064625a8"), 1, "rajesd@gmail.com", false, new Guid("00000000-0000-0000-0000-000000000000"), null, "Rajesh" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -208,6 +240,9 @@ namespace EmployeeSample.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Employees");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

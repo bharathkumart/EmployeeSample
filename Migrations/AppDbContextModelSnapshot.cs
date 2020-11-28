@@ -34,11 +34,17 @@ namespace EmployeeSample.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("Department")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsManager")
                         .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
@@ -55,6 +61,9 @@ namespace EmployeeSample.Migrations
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
+                    b.Property<Guid>("ParentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
@@ -63,6 +72,9 @@ namespace EmployeeSample.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Photopath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -89,10 +101,9 @@ namespace EmployeeSample.Migrations
 
             modelBuilder.Entity("EmployeeSample.Models.Employee", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Department")
                         .HasColumnType("int");
@@ -100,13 +111,19 @@ namespace EmployeeSample.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
+                    b.Property<bool>("IsManager")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ParentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Photopath")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
 
                     b.HasKey("Id");
 
@@ -115,17 +132,21 @@ namespace EmployeeSample.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = new Guid("0c23f85c-7ee7-4945-babc-a0edddda7d45"),
                             Department = 2,
                             Email = "bharath@gmail.com",
-                            Name = "Bharath"
+                            IsManager = false,
+                            ParentId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            UserName = "Bharath"
                         },
                         new
                         {
-                            Id = 2,
+                            Id = new Guid("dafb3870-e846-4424-ae50-1382064625a8"),
                             Department = 1,
                             Email = "rajesd@gmail.com",
-                            Name = "Rajesh"
+                            IsManager = false,
+                            ParentId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            UserName = "Rajesh"
                         });
                 });
 

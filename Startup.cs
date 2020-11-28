@@ -35,6 +35,9 @@ namespace EmployeeSample
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 5;
+                options.Password.RequiredUniqueChars = 0;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
             })
                 .AddEntityFrameworkStores<AppDbContext>();
             services.ConfigureDependencyInjection(_config);
