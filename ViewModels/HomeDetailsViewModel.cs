@@ -10,6 +10,8 @@ namespace EmployeeSample.ViewModels
     {
         public Employee employee { get; set; }
         public String PageTitle { get; set; }
+
+        public string ManagerName { get; set; }
        
     }
 }

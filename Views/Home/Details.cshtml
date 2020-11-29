@@ -13,9 +13,12 @@
             <div class="card-body text-center">
                 <img class="card-img-top" src="@photoPath" asp-append-version="true" />
 
-                <h4>Employee ID : @Model.employee.Id</h4>
                 <h4>Email : @Model.employee.Email</h4>
                 <h4>Department : @Model.employee.Department</h4>
+                @if (!(Model.ManagerName == null))
+                {
+                    <h4>Manager : @Model.ManagerName</h4>
+                }
 
             </div>
             <div class="card-footer text-center">

@@ -42,6 +42,8 @@ namespace EmployeeSample.Controllers
         public ViewResult Details(Guid id)
         {
             Employee employee = employeeRepo.GetEmployee(id);
+           
+           
             if(employee == null)
             {
                 Response.StatusCode = 404;
@@ -50,7 +52,13 @@ namespace EmployeeSample.Controllers
             HomeDetailsViewModel model = new HomeDetailsViewModel()
             {
                 employee = employee
+                
             };
+            if (employee.ParentId != new Guid())
+            {
+                Employee manager = employeeRepo.GetEmployee(employee.ParentId);
+                model.ManagerName = manager.UserName;
+            }
             //Employee employee = employeeRepo.GetEmployee(1);
             return View(model );
         }
